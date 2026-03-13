@@ -1,0 +1,285 @@
+:root {
+    --calc-body-bg: #1e1e1e;
+    --calc-body-shadow: #000000;
+    --screen-bg: #c1ccb8;
+    --screen-text: #1a1f18;
+    --btn-black: #0d0d0d;
+    --btn-num: #4d4d4d;
+    --btn-op: #2c2c2c;
+    --btn-gold: #c6a760;
+    --btn-ac-del: #000;
+    --text-white: #e0e0e0;
+    --text-gold: #c6a760;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Roboto', sans-serif;
+    user-select: none;
+}
+
+body {
+    background: #f0f0f0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.calculator-body {
+    background: var(--calc-body-bg);
+    width: 380px;
+    border-radius: 30px;
+    padding: 25px 20px 35px 20px;
+    box-shadow: 
+        inset 0 0 10px rgba(255, 255, 255, 0.1),
+        0 20px 50px rgba(0, 0, 0, 0.5),
+        -5px -5px 15px rgba(255, 255, 255, 0.4);
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    position: relative;
+    border: 1px solid #333;
+}
+
+/* Header Section */
+.top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 0 10px;
+}
+
+.branding {
+    display: flex;
+    flex-direction: column;
+}
+
+.brand {
+    color: var(--text-white);
+    font-size: 1.4rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.model {
+    color: var(--text-white);
+    font-size: 0.8rem;
+    font-weight: 400;
+    opacity: 0.8;
+}
+
+.solar-panel {
+    width: 120px;
+    height: 35px;
+    background: #2a1b1b;
+    border-radius: 4px;
+    box-shadow: inset 0 2px 5px rgba(0,0,0,0.8);
+    border: 1px solid #111;
+}
+
+/* Screen Section */
+.screen-wrapper {
+    background: #262626;
+    padding: 10px;
+    border-radius: 10px;
+    margin: 5px 0;
+    box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);
+}
+
+.screen {
+    background: var(--screen-bg);
+    border-radius: 5px;
+    height: 100px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: inset 0 2px 8px rgba(0,0,0,0.2);
+    font-family: 'VT323', monospace;
+    overflow: hidden;
+}
+
+.status-bar {
+    display: flex;
+    gap: 10px;
+    font-size: 0.9rem;
+    color: rgba(26, 31, 24, 0.4);
+    font-weight: bold;
+}
+
+.status-bar span.active {
+    color: var(--screen-text);
+}
+
+.previous-operand {
+    text-align: right;
+    font-size: 1.2rem;
+    color: rgba(26, 31, 24, 0.7);
+    min-height: 1.2rem;
+    white-space: nowrap;
+}
+
+.current-operand {
+    text-align: right;
+    font-size: 2.5rem;
+    color: var(--screen-text);
+    line-height: 1;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.classwiz {
+    text-align: center;
+    color: #a0a0a0;
+    font-size: 0.7rem;
+    letter-spacing: 3px;
+    margin-bottom: 5px;
+}
+
+/* Keypad Section */
+.keypad {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.key-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+
+.key-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+}
+
+.shift-text {
+    color: var(--text-gold);
+    font-size: 0.55rem;
+    font-weight: 500;
+}
+
+/* Base button styles */
+.btn {
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    color: var(--text-white);
+    font-weight: 500;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 
+        0 4px 0 rgba(0,0,0,0.6),
+        0 5px 10px rgba(0,0,0,0.4);
+    transition: transform 0.1s, box-shadow 0.1s;
+    position: relative;
+    outline: none;
+}
+
+.btn:active {
+    transform: translateY(4px);
+    box-shadow: 0 0 0 rgba(0,0,0,0.6), 0 1px 2px rgba(0,0,0,0.4);
+}
+
+.btn-small {
+    width: 32px;
+    height: 24px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+}
+
+.btn-black {
+    background: var(--btn-black);
+    color: var(--text-white);
+}
+
+.btn-gold {
+    background: #bda364;
+    color: #111;
+    font-weight: bold;
+}
+
+/* D-Pad */
+.d-pad {
+    position: relative;
+    width: 70px;
+    height: 50px;
+    background: var(--btn-black);
+    border-radius: 25px;
+    box-shadow: 0 4px 0 rgba(0,0,0,0.6);
+}
+.d-pad-center {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 0.6rem;
+    color: var(--text-white);
+    font-weight: bold;
+    pointer-events: none;
+}
+.d-btn {
+    position: absolute;
+    color: #666;
+    font-size: 0.8rem;
+    cursor: pointer;
+}
+.d-pad-top { top: 3px; left: 50%; transform: translateX(-50%); }
+.d-pad-bottom { bottom: 3px; left: 50%; transform: translateX(-50%); }
+.d-pad-left { left: 5px; top: 50%; transform: translateY(-50%); }
+.d-pad-right { right: 5px; top: 50%; transform: translateY(-50%); }
+
+/* Math rows spacing */
+.math-row {
+    padding: 0 5px;
+}
+
+/* Numpad Section */
+.numpad-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px 10px;
+    margin-top: 5px;
+}
+
+.btn-num, .btn-op {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    font-size: 1.1rem;
+    justify-self: center;
+}
+
+.btn-num {
+    background: var(--btn-num);
+    box-shadow: 
+        0 4px 0 #2a2a2a,
+        0 5px 8px rgba(0,0,0,0.5);
+}
+
+.btn-op {
+    background: var(--btn-op);
+    box-shadow: 
+        0 4px 0 #1a1a1a,
+        0 5px 8px rgba(0,0,0,0.5);
+}
+
+.btn-op.ac, .btn-op.del {
+    background: #111;
+    color: #ccc;
+    font-size: 0.9rem;
+    box-shadow: 0 4px 0 #000;
+}
+
+.btn-op.exe {
+    background: #111;
+    color: var(--text-white);
+    font-weight: bold;
+}
