@@ -51,11 +51,11 @@
 
             <!-- Row 2: Secondary Functions -->
             <div class="key-row func-row">
-                <div class="key-wrapper"><span class="shift-text">SHIFT</span><button class="btn btn-small btn-gold">S</button></div>
-                <div class="key-wrapper"><button class="btn btn-small btn-black">𝑓(x)</button></div>
+                <div class="key-wrapper"><span class="shift-text">SHIFT</span><button class="btn btn-small btn-gold" onclick="calculator.toggleShift()">S</button></div>
+                <div class="key-wrapper"><button class="btn btn-small btn-black" onclick="calculator.appendScientific('f(x)')">𝑓(x)</button></div>
                 <div class="key-wrapper"><span class="shift-text">M-</span><button class="btn btn-small btn-black" onclick="calculator.memoryAdd()">M+</button></div>
-                <div class="key-wrapper"><button class="btn btn-small btn-black">(</button></div>
-                <div class="key-wrapper"><button class="btn btn-small btn-black">)</button></div>
+                <div class="key-wrapper"><button class="btn btn-small btn-black" onclick="calculator.appendNumber('(')">(</button></div>
+                <div class="key-wrapper"><button class="btn btn-small btn-black" onclick="calculator.appendNumber(')')">)</button></div>
             </div>
 
             <!-- Row 3: Math Functions 1 -->
@@ -63,7 +63,7 @@
                 <div class="key-wrapper"><span class="shift-text">√</span><button class="btn btn-small btn-black" onclick="calculator.appendScientific('inv')">x⁻¹</button></div>
                 <div class="key-wrapper"><span class="shift-text">x³</span><button class="btn btn-small btn-black" onclick="calculator.appendScientific('square')">x²</button></div>
                 <div class="key-wrapper"><span class="shift-text">¹⁰ˣ</span><button class="btn btn-small btn-black" onclick="calculator.appendScientific('sqrt')">√</button></div>
-                <div class="key-wrapper"><span class="shift-text">eˣ</span><button class="btn btn-small btn-black" onclick="calculator.appendOperation('^')">xʸ</button></div>
+                <div class="key-wrapper"><span class="shift-text">eˣ</span><button class="btn btn-small btn-black" onclick="calculator.appendScientific('pow')">xʸ</button></div>
                 <div class="key-wrapper"><span class="shift-text">10ˣ</span><button class="btn btn-small btn-black" onclick="calculator.appendScientific('log')">log</button></div>
                 <div class="key-wrapper"><span class="shift-text">eˣ</span><button class="btn btn-small btn-black" onclick="calculator.appendScientific('ln')">ln</button></div>
             </div>
@@ -105,7 +105,7 @@
                 <button class="btn btn-num" onclick="calculator.appendNumber('0')">0</button>
                 <button class="btn btn-num" onclick="calculator.appendNumber('.')">.</button>
                 <button class="btn btn-op" onclick="calculator.appendScientific('10^')">×10ˣ</button>
-                <button class="btn btn-op" onclick="calculator.appendScientific('exp')">Ans</button>
+                <button class="btn btn-op" onclick="calculator.appendScientific('ans')">Ans</button>
                 <button class="btn btn-op exe" onclick="calculator.compute()">EXE</button>
             </div>
         </div>

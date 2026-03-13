@@ -3,7 +3,9 @@ class Calculator {
         this.previousOperandElement = document.getElementById('previous-operand');
         this.currentOperandElement = document.getElementById('current-operand');
         this.isRadian = false;
+        this.isShifted = false;
         this.memory = 0;
+        this.lastAnswer = '0';
         this.clear();
         
         // Configure math.js to use degrees or radians
@@ -72,56 +74,69 @@ class Calculator {
         if (this.currentOperand === 'Error') return;
         
         let expr = '';
-        switch(func) {
-            case 'sin':
-            case 'cos':
-            case 'tan':
-            case 'asin':
-            case 'acos':
-            case 'atan':
-                // For trig functions, we parse it at compute time to handle deg/rad
-                expr = `${func}(`;
-                break;
-            case 'log':
-                expr = 'log10(';
-                break;
-            case 'ln':
-                expr = 'log(';
-                break;
-            case 'sqrt':
-                expr = 'sqrt(';
-                break;
-            case 'square':
-                expr = '^2';
-                break;
-            case 'fact':
-                expr = '!';
-                break;
-            case '10^':
-                expr = '10^';
-                break;
-            case 'e^':
-                expr = 'e^';
-                break;
-            case 'inv':
-                expr = '1/(';
-                break;
-            case 'exp':
-                expr = 'E';
-                break;
+        if (this.isShifted) {
+             const shiftMap = {
+                 'inv': 'sqrt(',
+                 'square': '^3',
+                 'sqrt': '10^',
+                 'pow': 'e^',
+                 'log': '10^',
+                 'ln': 'e^',
+                 'sin': 'asin(',
+                 'cos': 'acos(',
+                 'tan': 'atan(',
+                 'fact': '!'
+             };
+             expr = shiftMap[func] || func;
+             this.toggleShift(); // disable shift after use
+        } else {
+            const baseMap = {
+                 'inv': '^-1',
+                 'square': '^2',
+                 'sqrt': 'sqrt(',
+                 'pow': '^',
+                 'log': 'log10(',
+                 'ln': 'log(',
+                 'sin': 'sin(',
+                 'cos': 'cos(',
+                 'tan': 'tan(',
+                 'fact': '!',
+                 '10^': '*10^',
+                 'ans': 'Ans'
+            };
+            expr = baseMap[func] !== undefined ? baseMap[func] : func;
         }
 
-        if (expr.includes('(') || expr === '10^' || expr === 'e^' || expr === 'E') {
+        if (expr.includes('(') || expr === '10^' || expr === 'e^' || expr === 'Ans') {
              if (this.currentOperand === '0') {
-                 this.currentOperand = expr;
+                 // if ans is clicked on an empty operand, we should start with ans
+                 if (expr === 'Ans') this.currentOperand = 'Ans';
+                 else this.currentOperand = expr;
              } else {
                  this.currentOperand += expr;
              }
         } else {
+            // e.g. ^2, ^-1, ^3, ! - should append to "0" also
             this.currentOperand += expr;
         }
         
         this.updateDisplay();
+    }
+
+    toggleShift() {
+        this.isShifted = !this.isShifted;
+        let shiftInd = document.getElementById('shift-indicator');
+        if (!shiftInd) {
+            shiftInd = document.createElement('span');
+            shiftInd.id = 'shift-indicator';
+            shiftInd.innerText = 'S';
+            document.querySelector('.status-bar').prepend(shiftInd);
+        }
+        if (this.isShifted) {
+            shiftInd.classList.add('active');
+        } else {
+            shiftInd.classList.remove('active');
+        }
     }
 
     toggleAngleMode() {
@@ -174,7 +189,7 @@ class Calculator {
     }
 
     formatExpressionForMathJs(expr) {
-        let formatted = expr.replace(/×/g, '*').replace(/÷/g, '/').replace(/pi/g, 'pi').replace(/e\^/g, 'exp(');
+        let formatted = expr.replace(/×/g, '*').replace(/÷/g, '/').replace(/pi/g, 'pi').replace(/e\^/g, 'exp(').replace(/Ans/g, `(${this.lastAnswer})`);
         
         // Handle degrees vs radians for trig functions
         if (!this.isRadian) {
@@ -236,6 +251,7 @@ class Calculator {
             this.previousOperand = this.currentOperand + ' =';
             const result = this.evaluateExpression(this.currentOperand);
             this.currentOperand = result;
+            this.lastAnswer = result;
         } catch (error) {
             this.previousOperand = this.currentOperand + ' =';
             this.currentOperand = 'Error';
