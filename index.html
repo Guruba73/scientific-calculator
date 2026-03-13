@@ -37,15 +37,15 @@
             <!-- Row 1: Nav & System -->
             <div class="key-row nav-row">
                 <button class="btn btn-small btn-black" onclick="calculator.clear()">ON</button>
-                <button class="btn btn-small btn-black" onclick="calculator.toggleAngleMode()">HOME</button>
-                <div class="d-pad">
-                    <div class="d-pad-top d-btn">˄</div>
-                    <div class="d-pad-left d-btn">˂</div>
-                    <div class="d-pad-center">OK</div>
-                    <div class="d-pad-right d-btn">˃</div>
-                    <div class="d-pad-bottom d-btn">˅</div>
-                </div>
                 <button class="btn btn-small btn-black" onclick="calculator.memoryClear()">MC</button> <!-- Approximating CATALOG/TOOLS -->
+                <div class="d-pad">
+                    <div class="d-pad-top d-btn" onclick="calculator.moveCursorUp()">˄</div>
+                    <div class="d-pad-left d-btn" onclick="calculator.moveCursorLeft()">˂</div>
+                    <div class="d-pad-center" onclick="calculator.toggleFormat()" style="pointer-events: auto; cursor: pointer;">OK</div>
+                    <div class="d-pad-right d-btn" onclick="calculator.moveCursorRight()">˃</div>
+                    <div class="d-pad-bottom d-btn" onclick="calculator.moveCursorDown()">˅</div>
+                </div>
+                <button class="btn btn-small btn-black" onclick="calculator.clearAll()">AC</button>
                 <button class="btn btn-small btn-black" onclick="calculator.memoryRecall()">MR</button>
             </div>
 

@@ -6,6 +6,13 @@ class Calculator {
         this.isShifted = false;
         this.memory = 0;
         this.lastAnswer = '0';
+        this.currentFormat = 'decimal'; // 'decimal' or 'fraction'
+        
+        // Advanced State
+        this.history = []; // stores previously executed calculations
+        this.historyIndex = -1;
+        this.cursorPosition = 0;
+        
         this.clear();
         
         // Configure math.js to use degrees or radians
@@ -19,7 +26,14 @@ class Calculator {
         this.currentOperand = '0';
         this.previousOperand = '';
         this.operation = undefined;
+        this.cursorPosition = 1;
+        this.historyIndex = this.history.length;
         this.updateDisplay();
+    }
+
+    clearAll() {
+        this.history = [];
+        this.clear();
     }
 
     delete() {
@@ -27,47 +41,93 @@ class Calculator {
             this.clear();
             return;
         }
-        if (this.currentOperand.length <= 1) {
-            this.currentOperand = '0';
-        } else {
-            this.currentOperand = this.currentOperand.toString().slice(0, -1);
+        if (this.currentOperand === '0') return;
+        
+        if (this.cursorPosition > 0) {
+            this.currentOperand = this.currentOperand.slice(0, this.cursorPosition - 1) + this.currentOperand.slice(this.cursorPosition);
+            this.cursorPosition--;
+            if (this.currentOperand === '') this.currentOperand = '0';
         }
+        
+        this.updateDisplay();
+    }
+
+    // --- Cursor Navigation & Replay ---
+    moveCursorLeft() {
+        if (this.currentOperand === '0' || this.currentOperand === 'Error') {
+            // Replay backwards
+            if (this.history.length > 0) {
+                this.historyIndex = Math.max(0, this.historyIndex - 1);
+                this.loadHistoryState();
+            }
+            return;
+        }
+        this.cursorPosition = Math.max(0, this.cursorPosition - 1);
+        this.updateDisplay();
+    }
+
+    moveCursorRight() {
+        if (this.currentOperand === '0' || this.currentOperand === 'Error') {
+            // Replay forwards
+            if (this.history.length > 0) {
+                this.historyIndex = Math.min(this.history.length - 1, this.historyIndex + 1);
+                this.loadHistoryState();
+            }
+            return;
+        }
+        this.cursorPosition = Math.min(this.currentOperand.length, this.cursorPosition + 1);
+        this.updateDisplay();
+    }
+    
+    moveCursorUp() {
+       if (this.history.length > 0) {
+           this.historyIndex = Math.max(0, this.historyIndex - 1);
+           this.loadHistoryState();
+       }
+    }
+    
+    moveCursorDown() {
+        if (this.history.length > 0) {
+           this.historyIndex = Math.min(this.history.length - 1, this.historyIndex + 1);
+           this.loadHistoryState();
+       }
+    }
+    
+    loadHistoryState() {
+        if (this.history[this.historyIndex]) {
+            this.currentOperand = this.history[this.historyIndex].expression;
+            this.previousOperand = this.history[this.historyIndex].result ? (this.currentOperand + " =") : '';
+            this.cursorPosition = this.currentOperand.length;
+            this.updateDisplay();
+        }
+    }
+    // ----------------------------------
+
+    insertAtCursor(str) {
+        if (this.currentOperand === '0' && str !== '.') {
+            this.currentOperand = str;
+        } else if (this.currentOperand === 'Error') {
+            this.currentOperand = str;
+        } else {
+            this.currentOperand = this.currentOperand.slice(0, this.cursorPosition) + str + this.currentOperand.slice(this.cursorPosition);
+        }
+        this.cursorPosition += str.length;
         this.updateDisplay();
     }
 
     appendNumber(number) {
-        if (this.currentOperand === '0' && number !== '.') {
-            this.currentOperand = number;
-        } else if (this.currentOperand === 'Error') {
-            this.currentOperand = number;
-        } else {
-            this.currentOperand += number.toString();
-        }
-        this.updateDisplay();
+        this.insertAtCursor(number.toString());
     }
 
     appendConstant(constant) {
-        let value = '';
-        if (constant === 'π') value = 'pi';
-        if (constant === 'e') value = 'e';
-        
-        if (this.currentOperand === '0' || this.currentOperand === 'Error') {
-            this.currentOperand = value;
-        } else {
-            this.currentOperand += value;
-        }
-        this.updateDisplay();
+        let value = constant === 'π' ? 'pi' : 'e';
+        this.insertAtCursor(value);
     }
 
     appendOperation(operation) {
         if (this.currentOperand === 'Error') return;
-        
-        let op = operation;
-        if (operation === '×') op = '*';
-        if (operation === '÷') op = '/';
-        
-        this.currentOperand += op;
-        this.updateDisplay();
+        let op = operation === '×' ? '*' : (operation === '÷' ? '/' : operation);
+        this.insertAtCursor(op);
     }
 
     appendScientific(func) {
@@ -85,7 +145,8 @@ class Calculator {
                  'sin': 'asin(',
                  'cos': 'acos(',
                  'tan': 'atan(',
-                 'fact': '!'
+                 'fact': '!',
+                 'f(x)': 'abs('
              };
              expr = shiftMap[func] || func;
              this.toggleShift(); // disable shift after use
@@ -102,7 +163,8 @@ class Calculator {
                  'tan': 'tan(',
                  'fact': '!',
                  '10^': '*10^',
-                 'ans': 'Ans'
+                 'ans': 'Ans',
+                 'f(x)': 'x'
             };
             expr = baseMap[func] !== undefined ? baseMap[func] : func;
         }
@@ -110,14 +172,14 @@ class Calculator {
         if (expr.includes('(') || expr === '10^' || expr === 'e^' || expr === 'Ans') {
              if (this.currentOperand === '0') {
                  // if ans is clicked on an empty operand, we should start with ans
-                 if (expr === 'Ans') this.currentOperand = 'Ans';
-                 else this.currentOperand = expr;
+                 if (expr === 'Ans') this.insertAtCursor('Ans');
+                 else this.insertAtCursor(expr);
              } else {
-                 this.currentOperand += expr;
+                 this.insertAtCursor(expr);
              }
         } else {
             // e.g. ^2, ^-1, ^3, ! - should append to "0" also
-            this.currentOperand += expr;
+            this.insertAtCursor(expr);
         }
         
         this.updateDisplay();
@@ -141,18 +203,15 @@ class Calculator {
 
     toggleAngleMode() {
         this.isRadian = !this.isRadian;
-        const btn = document.getElementById('deg-rad-btn');
         const degInd = document.getElementById('deg-indicator');
         const radInd = document.getElementById('rad-indicator');
         
         if (this.isRadian) {
-            btn.innerText = 'DEG';
-            degInd.classList.remove('active');
-            radInd.classList.add('active');
+            if(degInd) degInd.classList.remove('active');
+            if(radInd) radInd.classList.add('active');
         } else {
-            btn.innerText = 'RAD';
-            degInd.classList.add('active');
-            radInd.classList.remove('active');
+            if(degInd) degInd.classList.add('active');
+            if(radInd) radInd.classList.remove('active');
         }
     }
     
@@ -163,14 +222,18 @@ class Calculator {
     
     memoryRecall() {
         if (this.currentOperand === '0') {
-            this.currentOperand = this.memory.toString();
+            this.insertAtCursor(this.memory.toString());
         } else {
-             this.currentOperand += this.memory.toString();
+             this.insertAtCursor(this.memory.toString());
         }
-        this.updateDisplay();
     }
     
     memoryAdd() {
+        if (this.isShifted) {
+             this.memorySubtract();
+             this.toggleShift();
+             return;
+        }
         try {
             const result = this.evaluateExpression(this.currentOperand);
             this.memory += parseFloat(result);
@@ -247,20 +310,63 @@ class Calculator {
     compute() {
         if (this.currentOperand === '0' || this.currentOperand === 'Error') return;
         
+        let expressionSaved = this.currentOperand;
+        
         try {
             this.previousOperand = this.currentOperand + ' =';
             const result = this.evaluateExpression(this.currentOperand);
-            this.currentOperand = result;
+            this.currentOperand = this.formatResult(result);
             this.lastAnswer = result;
+            this.cursorPosition = this.currentOperand.length;
+            
+            // Save to history
+            this.history.push({ expression: expressionSaved, result: result });
+            this.historyIndex = this.history.length;
+            
         } catch (error) {
-            this.previousOperand = this.currentOperand + ' =';
+            this.previousOperand = expressionSaved + ' =';
             this.currentOperand = 'Error';
+            this.cursorPosition = 0;
+            this.history.push({ expression: expressionSaved, result: null });
+            this.historyIndex = this.history.length;
         }
         this.updateDisplay();
     }
 
+    formatResult(value) {
+        if (this.currentFormat === 'fraction') {
+            try {
+                // Attempt to convert to fraction
+                const frac = math.fraction(value);
+                return `${frac.n}/${frac.d}`;
+            } catch (e) {
+                return value.toString();
+            }
+        }
+        return value.toString();
+    }
+    
+    toggleFormat() {
+        if (this.currentOperand === '0' || this.currentOperand === 'Error' || this.historyIndex < 0) return;
+        
+        // Only toggle formatting if we are currently displaying a result
+        if (this.previousOperand.includes('=')) {
+             this.currentFormat = this.currentFormat === 'decimal' ? 'fraction' : 'decimal';
+             this.currentOperand = this.formatResult(this.lastAnswer);
+             this.cursorPosition = this.currentOperand.length;
+             this.updateDisplay();
+        }
+    }
+
     updateDisplay() {
-        this.currentOperandElement.innerText = this.currentOperand;
+        // Render Cursor
+        if (this.currentOperand === 'Error') {
+             this.currentOperandElement.innerText = this.currentOperand;
+        } else {
+             const beforeCursor = this.currentOperand.slice(0, this.cursorPosition);
+             const afterCursor = this.currentOperand.slice(this.cursorPosition);
+             this.currentOperandElement.innerHTML = `${beforeCursor}<span class="cursor">|</span>${afterCursor}`;
+        }
         this.previousOperandElement.innerText = this.previousOperand;
     }
 }

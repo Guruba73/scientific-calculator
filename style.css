@@ -132,6 +132,17 @@ body {
     overflow: hidden;
 }
 
+.cursor {
+    animation: blink 1s step-end infinite;
+    color: var(--screen-text);
+    font-weight: 300;
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}
+
 .classwiz {
     text-align: center;
     color: #a0a0a0;
