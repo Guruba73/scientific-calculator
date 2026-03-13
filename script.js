@@ -13,6 +13,11 @@ class Calculator {
         this.historyIndex = -1;
         this.cursorPosition = 0;
         
+        // App Modes
+        this.currentMode = 'calculate'; // 'calculate', 'complex', 'matrix', etc.
+        this.isHomeMenuOpen = false;
+        this.homeMenuIndex = 0;
+        
         this.clear();
         
         // Configure math.js to use degrees or radians
@@ -79,18 +84,42 @@ class Calculator {
         this.updateDisplay();
     }
     
-    moveCursorUp() {
-       if (this.history.length > 0) {
-           this.historyIndex = Math.max(0, this.historyIndex - 1);
-           this.loadHistoryState();
-       }
+    moveMenuUp() {
+        if (this.isHomeMenuOpen) {
+             const items = document.querySelectorAll('.menu-item');
+             this.homeMenuIndex = Math.max(0, this.homeMenuIndex - 1);
+             items.forEach((item, i) => item.classList.toggle('active', i === this.homeMenuIndex));
+        } else {
+             if (this.history.length > 0) {
+                 this.historyIndex = Math.max(0, this.historyIndex - 1);
+                 this.loadHistoryState();
+             }
+        }
     }
     
-    moveCursorDown() {
-        if (this.history.length > 0) {
-           this.historyIndex = Math.min(this.history.length - 1, this.historyIndex + 1);
-           this.loadHistoryState();
-       }
+    moveMenuDown() {
+        if (this.isHomeMenuOpen) {
+             const items = document.querySelectorAll('.menu-item');
+             this.homeMenuIndex = Math.min(items.length - 1, this.homeMenuIndex + 1);
+             items.forEach((item, i) => item.classList.toggle('active', i === this.homeMenuIndex));
+        } else {
+            if (this.history.length > 0) {
+               this.historyIndex = Math.min(this.history.length - 1, this.historyIndex + 1);
+               this.loadHistoryState();
+           }
+        }
+    }
+    
+    dpadCenterClick() {
+        if (this.isHomeMenuOpen) {
+            const items = document.querySelectorAll('.menu-item');
+            const modes = ['calculate', 'complex', 'matrix', 'vector', 'equation'];
+            if (modes[this.homeMenuIndex]) {
+                this.setMode(modes[this.homeMenuIndex]);
+            }
+        } else {
+            this.toggleFormat();
+        }
     }
     
     loadHistoryState() {
@@ -221,6 +250,7 @@ class Calculator {
     }
     
     memoryRecall() {
+        if(this.isHomeMenuOpen) return;
         if (this.currentOperand === '0') {
             this.insertAtCursor(this.memory.toString());
         } else {
@@ -307,7 +337,60 @@ class Calculator {
         }
     }
 
+    // --- HOME MENU & MODES ---
+    openHomeMenu() {
+        if (this.isShifted) {
+             this.toggleAngleMode(); // SHIFT + HOME acts as SETUP (angle toggle for now)
+             this.toggleShift();
+             return;
+        }
+        this.isHomeMenuOpen = !this.isHomeMenuOpen;
+        const menu = document.getElementById('home-menu');
+        const display = document.getElementById('display-area');
+        
+        if (this.isHomeMenuOpen) {
+            menu.style.display = 'flex';
+            display.style.display = 'none';
+        } else {
+            menu.style.display = 'none';
+            display.style.display = 'flex';
+        }
+    }
+    
+    setMode(mode) {
+        this.currentMode = mode;
+        this.isHomeMenuOpen = false;
+        
+        // Update UI
+        document.getElementById('home-menu').style.display = 'none';
+        document.getElementById('display-area').style.display = 'flex';
+        
+        const modeMap = {
+            'calculate': 'CALC',
+            'complex': 'CPLX',
+            'matrix': 'MAT',
+            'vector': 'VCT',
+            'equation': 'EQN'
+        };
+        
+        const modeIndicator = document.getElementById('mode-indicator');
+        if (modeIndicator) {
+             modeIndicator.innerText = `[${modeMap[mode] || mode.toUpperCase()}]`;
+        }
+        
+        // In the future, this is where we actually change the screen payload
+        if (mode !== 'calculate') {
+             this.currentOperand = `<${mode.toUpperCase()} MODE>`;
+             this.previousOperand = '';
+             this.cursorPosition = this.currentOperand.length;
+             this.updateDisplay();
+        } else {
+             this.clear();
+        }
+    }
+
     compute() {
+        if (this.isHomeMenuOpen) return;
         if (this.currentOperand === '0' || this.currentOperand === 'Error') return;
         
         let expressionSaved = this.currentOperand;

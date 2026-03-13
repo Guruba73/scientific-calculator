@@ -151,6 +151,34 @@ body {
     margin-bottom: 5px;
 }
 
+/* Home Menu */
+.home-menu {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    font-size: 1.2rem;
+    color: var(--screen-text);
+    padding-top: 5px;
+}
+
+.menu-item {
+    padding: 2px 5px;
+    cursor: pointer;
+}
+
+.menu-item.active {
+    background: #111;
+    color: #fff;
+}
+
+.display-area {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    flex: 1;
+}
+
 /* Keypad Section */
 .keypad {
     display: flex;

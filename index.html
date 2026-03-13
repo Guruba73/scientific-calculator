@@ -25,9 +25,23 @@
                 <div class="status-bar">
                     <span id="deg-indicator" class="active">D</span>
                     <span id="rad-indicator">R</span>
+                    <span id="mode-indicator" style="margin-left: auto;">[CALC]</span>
                 </div>
-                <div class="previous-operand" id="previous-operand"></div>
-                <div class="current-operand" id="current-operand">0</div>
+                
+                <!-- Home Menu Apps Overlay -->
+                <div class="home-menu" id="home-menu" style="display: none;">
+                    <div class="menu-item active" onclick="calculator.setMode('calculate')">1: Calculate</div>
+                    <div class="menu-item" onclick="calculator.setMode('complex')">2: Complex</div>
+                    <div class="menu-item" onclick="calculator.setMode('matrix')">3: Matrix</div>
+                    <div class="menu-item" onclick="calculator.setMode('vector')">4: Vector</div>
+                    <div class="menu-item" onclick="calculator.setMode('equation')">5: Equation</div>
+                </div>
+
+                <!-- Standard Display -->
+                <div class="display-area" id="display-area">
+                    <div class="previous-operand" id="previous-operand"></div>
+                    <div class="current-operand" id="current-operand">0</div>
+                </div>
             </div>
         </div>
         
@@ -36,16 +50,16 @@
         <div class="keypad">
             <!-- Row 1: Nav & System -->
             <div class="key-row nav-row">
-                <button class="btn btn-small btn-black" onclick="calculator.clear()">ON</button>
-                <button class="btn btn-small btn-black" onclick="calculator.memoryClear()">MC</button> <!-- Approximating CATALOG/TOOLS -->
+                <div class="key-wrapper"><span class="shift-text">OFF</span><button class="btn btn-small btn-black" onclick="calculator.clearAll()">ON</button></div>
+                <div class="key-wrapper"><span class="shift-text">SETUP</span><button class="btn btn-small btn-black" onclick="calculator.openHomeMenu()">HOME</button></div>
                 <div class="d-pad">
-                    <div class="d-pad-top d-btn" onclick="calculator.moveCursorUp()">˄</div>
+                    <div class="d-pad-top d-btn" onclick="calculator.moveMenuUp()">˄</div>
                     <div class="d-pad-left d-btn" onclick="calculator.moveCursorLeft()">˂</div>
-                    <div class="d-pad-center" onclick="calculator.toggleFormat()" style="pointer-events: auto; cursor: pointer;">OK</div>
+                    <div class="d-pad-center" onclick="calculator.dpadCenterClick()" style="pointer-events: auto; cursor: pointer;">OK</div>
                     <div class="d-pad-right d-btn" onclick="calculator.moveCursorRight()">˃</div>
-                    <div class="d-pad-bottom d-btn" onclick="calculator.moveCursorDown()">˅</div>
+                    <div class="d-pad-bottom d-btn" onclick="calculator.moveMenuDown()">˅</div>
                 </div>
-                <button class="btn btn-small btn-black" onclick="calculator.clearAll()">AC</button>
+                <button class="btn btn-small btn-black" onclick="calculator.memoryClear()">MC</button> <!-- Approximating CATALOG/TOOLS -->
                 <button class="btn btn-small btn-black" onclick="calculator.memoryRecall()">MR</button>
             </div>
 
