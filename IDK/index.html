@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Casio fx-991CW Calculator Emulator</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Using a font similar to the Casio branding and generic sans-serif for buttons -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Font for LCD screen -->
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="calculator-body">
+        <div class="top-row">
+            <div class="branding">
+                <div class="brand">CASIO</div>
+                <div class="model">fx-991CW</div>
+            </div>
+            <div class="solar-panel"></div>
+        </div>
+
+        <div class="screen-wrapper">
+            <div class="screen">
+                <div class="status-bar">
+                    <span id="deg-indicator" class="active">D</span>
+                    <span id="rad-indicator">R</span>
+                </div>
+                <div class="previous-operand" id="previous-operand"></div>
+                <div class="current-operand" id="current-operand">0</div>
+            </div>
+        </div>
+        
+        <div class="classwiz">CLASSWIZ</div>
+
+        <div class="keypad">
+            <!-- Row 1: Nav & System -->
+            <div class="key-row nav-row">
+                <button class="btn btn-small btn-black" onclick="calculator.clear()">ON</button>
+                <button class="btn btn-small btn-black" onclick="calculator.toggleAngleMode()">HOME</button>
+                <div class="d-pad">
+                    <div class="d-pad-top d-btn">˄</div>
+                    <div class="d-pad-left d-btn">˂</div>
+                    <div class="d-pad-center">OK</div>
+                    <div class="d-pad-right d-btn">˃</div>
+                    <div class="d-pad-bottom d-btn">˅</div>
+                </div>
+                <button class="btn btn-small btn-black" onclick="calculator.memoryClear()">MC</button> <!-- Approximating CATALOG/TOOLS -->
+                <button class="btn btn-small btn-black" onclick="calculator.memoryRecall()">MR</button>
+            </div>
+
+            <!-- Row 2: Secondary Functions -->
+            <div class="key-row func-row">
+                <div class="key-wrapper"><span class="shift-text">SHIFT</span><button class="btn btn-small btn-gold">S</button></div>
+                <div class="key-wrapper"><button class="btn btn-small btn-black">𝑓(x)</button></div>
+                <div class="key-wrapper"><span class="shift-text">M-</span><button class="btn btn-small btn-black" onclick="calculator.memoryAdd()">M+</button></div>
+                <div class="key-wrapper"><button class="btn btn-small btn-black">(</button></div>
+                <div class="key-wrapper"><button class="btn btn-small btn-black">)</button></div>
+            </div>
+
+            <!-- Row 3: Math Functions 1 -->
+            <div class="key-row math-row">
+                <div class="key-wrapper"><span class="shift-text">√</span><button class="btn btn-small btn-black" onclick="calculator.appendScientific('inv')">x⁻¹</button></div>
+                <div class="key-wrapper"><span class="shift-text">x³</span><button class="btn btn-small btn-black" onclick="calculator.appendScientific('square')">x²</button></div>
+                <div class="key-wrapper"><span class="shift-text">¹⁰ˣ</span><button class="btn btn-small btn-black" onclick="calculator.appendScientific('sqrt')">√</button></div>
+                <div class="key-wrapper"><span class="shift-text">eˣ</span><button class="btn btn-small btn-black" onclick="calculator.appendOperation('^')">xʸ</button></div>
+                <div class="key-wrapper"><span class="shift-text">10ˣ</span><button class="btn btn-small btn-black" onclick="calculator.appendScientific('log')">log</button></div>
+                <div class="key-wrapper"><span class="shift-text">eˣ</span><button class="btn btn-small btn-black" onclick="calculator.appendScientific('ln')">ln</button></div>
+            </div>
+
+            <!-- Row 4: Math Functions 2 -->
+            <div class="key-row math-row">
+                <div class="key-wrapper"><span class="shift-text">sin⁻¹</span><button class="btn btn-small btn-black" onclick="calculator.appendScientific('sin')">sin</button></div>
+                <div class="key-wrapper"><span class="shift-text">cos⁻¹</span><button class="btn btn-small btn-black" onclick="calculator.appendScientific('cos')">cos</button></div>
+                <div class="key-wrapper"><span class="shift-text">tan⁻¹</span><button class="btn btn-small btn-black" onclick="calculator.appendScientific('tan')">tan</button></div>
+                <div class="key-wrapper"><span class="shift-text">n!</span><button class="btn btn-small btn-black" onclick="calculator.appendScientific('fact')">n!</button></div>
+                <div class="key-wrapper"><span class="shift-text">π</span><button class="btn btn-small btn-black" onclick="calculator.appendConstant('π')">π</button></div>
+                <div class="key-wrapper"><span class="shift-text">e</span><button class="btn btn-small btn-black" onclick="calculator.appendConstant('e')">e</button></div>
+            </div>
+
+            <!-- Main Numpad Grid -->
+            <div class="numpad-grid">
+                <!-- Row 1 -->
+                <button class="btn btn-num" onclick="calculator.appendNumber('7')">7</button>
+                <button class="btn btn-num" onclick="calculator.appendNumber('8')">8</button>
+                <button class="btn btn-num" onclick="calculator.appendNumber('9')">9</button>
+                <button class="btn btn-op del" onclick="calculator.delete()">DEL</button>
+                <button class="btn btn-op ac" onclick="calculator.clear()">AC</button>
+                
+                <!-- Row 2 -->
+                <button class="btn btn-num" onclick="calculator.appendNumber('4')">4</button>
+                <button class="btn btn-num" onclick="calculator.appendNumber('5')">5</button>
+                <button class="btn btn-num" onclick="calculator.appendNumber('6')">6</button>
+                <button class="btn btn-op" onclick="calculator.appendOperation('×')">×</button>
+                <button class="btn btn-op" onclick="calculator.appendOperation('÷')">÷</button>
+                
+                <!-- Row 3 -->
+                <button class="btn btn-num" onclick="calculator.appendNumber('1')">1</button>
+                <button class="btn btn-num" onclick="calculator.appendNumber('2')">2</button>
+                <button class="btn btn-num" onclick="calculator.appendNumber('3')">3</button>
+                <button class="btn btn-op" onclick="calculator.appendOperation('+')">+</button>
+                <button class="btn btn-op" onclick="calculator.appendOperation('-')">-</button>
+                
+                <!-- Row 4 -->
+                <button class="btn btn-num" onclick="calculator.appendNumber('0')">0</button>
+                <button class="btn btn-num" onclick="calculator.appendNumber('.')">.</button>
+                <button class="btn btn-op" onclick="calculator.appendScientific('10^')">×10ˣ</button>
+                <button class="btn btn-op" onclick="calculator.appendScientific('exp')">Ans</button>
+                <button class="btn btn-op exe" onclick="calculator.compute()">EXE</button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
